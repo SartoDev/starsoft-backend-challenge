@@ -6,3 +6,94 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model PasswordReset {
+  token      String   @id @db.Char(21)
+  userId     String    @unique    @db.Uuid    @map("user_id")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  validUntil DateTime    @default(dbgenerated("(timezone('utc'::text, now()) + '2 days'::interval)"))    @db.Timestamp(6)    @map("valid_until")
+
+  @@map("password_reset")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+model User {
+  id String @id @default(uuid()) @db.Uuid
+  email             String             @unique
+  passwordHash      String    @map("password_hash")
+  fullName         String    @map("full_name")
+  passwordReset     PasswordReset?
+  seatReservation       SeatReservation[]
+  role      Role     @default(CUSTOMER)
+  createdAt  DateTime @default(dbgenerated("timezone('UTC'::text, now())"))    @db.Timestamp(6)    @map("created_at")
+  updatedAt  DateTime    @updatedAt    @db.Timestamp(6)    @map("updated_at")
+  
+  @@map("user")
+}
+
+model Movie {
+  id String @id @default(uuid()) @db.Uuid
+  name String @unique
+  session       Session[]
+  
+  @@map("movie")
+}
+
+model Room {
+  id String @id @default(uuid()) @db.Uuid
+  name String @unique
+  session       Session[]
+
+  @@map("room")
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  EXPIRED
+}
+
+model SeatReservation {
+  id String @id @default(uuid()) @db.Uuid
+  status    ReservationStatus
+  userId     String      @db.Uuid @map("user_id")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  seatId     String      @db.Uuid @map("seat_id")
+  seat       Seat     @relation(fields: [seatId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime           @db.Timestamp(6)    @map("expires_at")
+  createdAt  DateTime           @default(dbgenerated("timezone('UTC'::text, now())")) @db.Timestamp(6)    @map("created_at")
+
+  @@index([expiresAt])
+  @@map("seat_reservations")
+}
+
+enum SeatStatus {
+  FREE
+  RESERVED
+}
+
+model Seat {
+  id String @id @default(uuid()) @db.Uuid
+  number Int @db.SmallInt
+  status             SeatStatus
+  seatReservation       SeatReservation[]
+  sessionId     String      @db.Uuid @map("session_id")
+  session       Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  @@map("seat")
+}
+
+model Session {
+  id String @id @default(uuid()) @db.Uuid
+  hour             DateTime @db.Time(6)
+  seat       Seat[]
+  movieId     String      @db.Uuid @map("movie_id")
+  movie       Movie     @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  roomId     String      @db.Uuid @map("room_id")
+  room       Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  
+  @@map("session")
+}
