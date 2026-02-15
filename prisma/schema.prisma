@@ -1,6 +1,7 @@
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
+  moduleFormat    = "cjs"
 }
 
 datasource db {
@@ -37,7 +38,9 @@ model User {
 
 model Movie {
   id String @id @default(uuid()) @db.Uuid
-  name String @unique
+  title String @unique
+  releaseYear Int @db.SmallInt
+  genre  String
   session       Session[]
   
   @@map("movie")
