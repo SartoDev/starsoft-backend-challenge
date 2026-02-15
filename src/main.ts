@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as packageJson from '../package.json';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,7 +10,7 @@ async function bootstrap() {
   const options = new DocumentBuilder()
     .setTitle('Starsoft Backend Challenge by @sartodev')
     .setDescription('A selling point of sale application built with NestJS')
-    .setVersion(packageJson.version)
+    .setVersion('1.0.0')
     .addBearerAuth()
     .build();
 
