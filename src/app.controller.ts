@@ -4,11 +4,13 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 @ApiTags('Health Check')
 @Controller('health-check')
 export class AppController {
-  @Get()
+  @Get('health-check')
   @ApiOperation({
     summary: 'Health Check',
     description: 'Check the system status',
   })
   @HttpCode(200)
-  healthCheck() {}
+  healthCheck(): string {
+    return 'Application is healthy';
+  }
 }
