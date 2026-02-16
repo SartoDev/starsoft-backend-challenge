@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SeatResponse } from './models/response/seat.response';
 import { CreateSeatRequest } from './models/request/create-seat.request';
@@ -23,13 +23,13 @@ export class SeatService {
       where: {
         sessionId,
         status: SeatStatus.FREE,
-        seatReservation: {
-          none: {},
-        },
       },
       include: {
         session: true,
       },
+      orderBy: {
+        number: 'asc',
+      }
     });
     return seats.map((seat) => new SeatResponse(seat));
   }
@@ -51,17 +51,23 @@ export class SeatService {
   }
 
   async create(createSeatRequest: CreateSeatRequest) {
-    const seat = await this.prismaService.seat.create({
-      data: {
-        sessionId: createSeatRequest.sessionId,
-        number: createSeatRequest.seatNumber,
-        status: SeatStatus.FREE,
-      },
-      include: {
-        session: true,
-      },
-    });
-    return new SeatResponse(seat);
+    const seatList: SeatResponse[] = [];
+    for (const seatNumber of createSeatRequest.seatNumberList) {
+      await this.checkIfSeatAlreadyExists(seatNumber);
+      const seat = await this.prismaService.seat.create({
+        data: {
+          sessionId: createSeatRequest.sessionId,
+          number: seatNumber,
+          status: SeatStatus.FREE,
+          value: createSeatRequest.value,
+        },
+        include: {
+          session: true,
+        },
+      });
+      seatList.push(new SeatResponse(seat));
+    }
+    return seatList;
   }
 
   async update(id: string, updateSeatRequest: UpdateSeatRequest) {
@@ -77,6 +83,7 @@ export class SeatService {
         sessionId: updateSeatRequest.sessionId,
         number: updateSeatRequest.seatNumber,
         status: updateSeatRequest.status as SeatStatus,
+        value: updateSeatRequest.value,
       },
     });
     return new SeatResponse(seat);
@@ -90,5 +97,16 @@ export class SeatService {
       },
     });
     return { message: 'Seat deleted successfully' };
+  }
+
+  private async checkIfSeatAlreadyExists(seatNumber: number) {
+    const seat = await this.prismaService.seat.findFirst({
+      where: {
+        number: seatNumber,
+      },
+    });
+    if (seat) {
+      throw new ConflictException(`Seat with number ${seatNumber} already exists`);
+    }
   }
 }

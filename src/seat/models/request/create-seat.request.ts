@@ -3,12 +3,16 @@ import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateSeatRequest {
   @ApiProperty()
-  @IsNumber()
   @IsNotEmpty()
-  seatNumber: number;
+  seatNumberList: number[];
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   sessionId: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  value: number;
 }

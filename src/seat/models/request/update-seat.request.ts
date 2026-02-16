@@ -15,4 +15,9 @@ export class UpdateSeatRequest {
   @IsString()
   @IsNotEmpty()
   sessionId: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  value: number;
 }

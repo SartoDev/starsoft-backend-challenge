@@ -10,6 +10,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { RoomModule } from './room/room.module';
 import { SessionModule } from './session/session.module';
 import { SeatModule } from './seat/seat.module';
+import { SeatReservationModule } from './seat-reservation/seat-reservation.module';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ScheduleModule } from '@nestjs/schedule';
+import { KafkaModule } from './kafka/kafka.module';
+import { RedisModule } from './redis/redis.module';
 @Module({
   imports: [
     ThrottlerModule.forRoot({
@@ -34,6 +39,10 @@ import { SeatModule } from './seat/seat.module';
     RoomModule,
     SessionModule,
     SeatModule,
+    KafkaModule,
+    RedisModule,
+    SeatReservationModule,
+    ScheduleModule.forRoot(),
   ],
   providers: [
     {

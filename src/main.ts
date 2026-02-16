@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,6 +18,18 @@ async function bootstrap() {
     }),
   );
 
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        brokers: ['kafka:9092'],
+      },
+      consumer: {
+        groupId: 'seat-pre-reservation-group',
+      },
+    },
+  });
+
   app.setGlobalPrefix('api');
 
   const options = new DocumentBuilder()
@@ -28,8 +41,9 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, options);
 
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api-docs', app, document);
 
+  await app.startAllMicroservices();
   await app.listen(3000);
 }
 

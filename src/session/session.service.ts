@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateSessionRequest } from './models/request/create-session.request';
 import { UpdateSessionRequest } from './models/request/update-session.request';
@@ -115,7 +115,7 @@ export class SessionService {
         `Session already exists with movieId: ${movieId} and roomId: ${roomId}`,
         'SessionService',
       );
-      throw new NotFoundException('Session already exists');
+      throw new ConflictException('Session already exists');
     }
   }
 }
