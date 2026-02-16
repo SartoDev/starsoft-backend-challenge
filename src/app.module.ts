@@ -1,8 +1,9 @@
-import { Module } from "@nestjs/common";
-import { AppController } from "./app.controller";
-import { ConfigModule } from "@nestjs/config";
-import { ThrottlerModule } from "@nestjs/throttler";
-import { JwtModule } from "@nestjs/jwt";
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ThrottlerModule.forRoot({
@@ -19,9 +20,10 @@ import { JwtModule } from "@nestjs/jwt";
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: {
-        expiresIn: "1h",
+        expiresIn: '24h',
       },
     }),
+    AuthModule,
   ],
   controllers: [AppController],
 })
