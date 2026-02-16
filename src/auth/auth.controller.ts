@@ -4,12 +4,14 @@ import { LoginRequest } from './models/request/login.request';
 import { SignupRequest } from './models/request/signup.request';
 import { JwtPayload } from './jwt-payload';
 import type { Request, Response } from 'express';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @Throttle({ default: { ttl: 60_000, limit: 5 } })
   async login(@Body() loginRequest: LoginRequest, @Res() res: Response) {
     const user = await this.authService.login(loginRequest);
     const jwtPayload: JwtPayload = {
@@ -43,6 +45,7 @@ export class AuthController {
   }
 
   @Post('signup')
+  @Throttle({ default: { ttl: 60_000, limit: 3 } })
   signup(@Body() signupRequest: SignupRequest) {
     return this.authService.signup(signupRequest);
   }

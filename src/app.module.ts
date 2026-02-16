@@ -4,13 +4,15 @@ import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
+import { ThrottlerBehindProxyGuard } from './common/guards/throttler-behind-proxy.guard';
+import { APP_GUARD } from '@nestjs/core';
 @Module({
   imports: [
     ThrottlerModule.forRoot({
       throttlers: [
         {
-          ttl: 60,
-          limit: 50,
+          ttl: 60_000,
+          limit: 60,
         },
       ],
     }),
@@ -24,6 +26,12 @@ import { AuthModule } from './auth/auth.module';
       },
     }),
     AuthModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerBehindProxyGuard,
+    },
   ],
   controllers: [AppController],
 })
