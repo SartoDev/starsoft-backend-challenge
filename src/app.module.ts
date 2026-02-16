@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { MovieModule } from './movie/movie.module';
 import { ThrottlerBehindProxyGuard } from './common/guards/throttler-behind-proxy.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { RoomModule } from './room/room.module';
 @Module({
   imports: [
     ThrottlerModule.forRoot({
@@ -28,6 +29,7 @@ import { APP_GUARD } from '@nestjs/core';
     }),
     AuthModule,
     MovieModule,
+    RoomModule,
   ],
   providers: [
     {
