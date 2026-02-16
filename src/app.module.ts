@@ -9,6 +9,7 @@ import { ThrottlerBehindProxyGuard } from './common/guards/throttler-behind-prox
 import { APP_GUARD } from '@nestjs/core';
 import { RoomModule } from './room/room.module';
 import { SessionModule } from './session/session.module';
+import { SeatModule } from './seat/seat.module';
 @Module({
   imports: [
     ThrottlerModule.forRoot({
@@ -32,6 +33,7 @@ import { SessionModule } from './session/session.module';
     MovieModule,
     RoomModule,
     SessionModule,
+    SeatModule,
   ],
   providers: [
     {
