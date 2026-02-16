@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
+import { MovieModule } from './movie/movie.module';
 import { ThrottlerBehindProxyGuard } from './common/guards/throttler-behind-proxy.guard';
 import { APP_GUARD } from '@nestjs/core';
 @Module({
@@ -26,6 +27,7 @@ import { APP_GUARD } from '@nestjs/core';
       },
     }),
     AuthModule,
+    MovieModule,
   ],
   providers: [
     {
